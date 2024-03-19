@@ -127,3 +127,75 @@ exports.addPrerequisitesById = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+//added later ash
+
+exports.addPrerequisite = async (req, res) => {
+  console.log("add requist called");
+  const nodeId = req.params.nodeId;
+  const prerequisiteId = req.params.prerequisiteId;
+  console.log(nodeId, " ", prerequisiteId);
+  if (!nodeId)
+    return res.send({
+      status: "failed",
+      message: "provide node id to add prerequisite",
+    });
+  if (!prerequisiteId)
+    return res.send({
+      status: "failed",
+      message: "provide prerequisite id to add prerequisite",
+    });
+
+  try {
+    const node = await Node.findById(nodeId);
+    if (!node)
+      return res.send({
+        status: "failed",
+        message: "node not found to add prerequisite",
+      });
+    const updatedNode = await Node.findByIdAndUpdate(nodeId, {
+      $push: { prerequisites: prerequisiteId },
+    });
+    res.send({
+      status: "success",
+      message: "prerequisite added succeessfully",
+      updatedNode: updatedNode,
+    });
+  } catch (err) {
+    console.log("error in finding node");
+  }
+};
+
+const populatePrerequisites = async (nodeId) => {
+  const node = await Node.findById(nodeId).populate("prerequisites");
+
+  if (!node) {
+    return null;
+  }
+
+  if (node.prerequisites.length > 0) {
+    const promises = node.prerequisites.map((prereq) =>
+      populatePrerequisites(prereq._id)
+    );
+    node.prerequisites = await Promise.all(promises);
+  }
+
+  return node;
+};
+
+// Controller function to retrieve a node by ID and populate prerequisites dynamically
+exports.getNodeWithPrerequisites = async (req, res) => {
+  console.log(" getNodeWithPrerequisites called !!");
+  nodeId = req.params.nodeId;
+
+  try {
+    const node = await populatePrerequisites(nodeId);
+    if (!node) {
+      return res.status(404).json({ error: "Node not found" });
+    }
+    res.json(node);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
