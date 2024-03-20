@@ -24,6 +24,7 @@ app.get(
   "/nodes/get-node-with-prerequisite/:nodeId",
   nodeController.getNodeWithPrerequisites
 );
+app.post("/nodes/addResourses/:nodeId", nodeController.addResourses);
 
 app.listen(5000, () => console.log("Server ready on port 5000."));
 
