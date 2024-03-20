@@ -199,3 +199,36 @@ exports.getNodeWithPrerequisites = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.addResourses = async (req, res) => {
+  console.log("add resourse requist called");
+  const { resourseName, resourseUrl } = req.body;
+  if (!resourseName || !resourseUrl)
+    return res.send({ status: "failed", message: "all fields are required" });
+  const nodeId = req.params.nodeId;
+  if (!nodeId)
+    return res.send({
+      status: "failed",
+      message: "provide node id to add resourses",
+    });
+
+  try {
+    const node = await Node.findById(nodeId);
+    if (!node)
+      return res.send({
+        status: "failed",
+        message: "node not found to add resourse",
+      });
+    const updatedNode = await Node.findByIdAndUpdate(nodeId, {
+      $push: { resources: { resourseName, resourseUrl } },
+    });
+    res.send({
+      status: "success",
+      message: "resourse Added successfully added succeessfully",
+      updatedNode: updatedNode,
+    });
+  } catch (err) {
+    console.log("error in finding node to add resourse");
+    return res.send({ status: "failed", message: "can't add resourse" });
+  }
+};
