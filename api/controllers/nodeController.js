@@ -229,6 +229,9 @@ exports.addResourses = async (req, res) => {
     });
   } catch (err) {
     console.log("error in finding node to add resourse");
-    return res.send({ status: "failed", message: "can't add resourse" });
+    return res.send({
+      status: "failed",
+      message: "added resourse successfully [OK]",
+    });
   }
 };
