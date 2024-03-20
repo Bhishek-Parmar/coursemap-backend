@@ -2,6 +2,8 @@ const express = require("express");
 const connectToDb = require("./connectToDb");
 const nodeController = require("./controllers/nodeController");
 const app = express();
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 
 connectToDb();
