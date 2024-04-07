@@ -115,3 +115,20 @@ exports.getPendingRequests = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+  exports.rejectRequest = async (req, res) => {
+    try {
+      const requestId = req.params.id;
+      const updatedRequest = await Request.findByIdAndUpdate(
+        requestId,
+        { status: 'rejected' },
+        { new: true }
+      );
+      if (!updatedRequest) {
+        return res.status(404).json({ message: 'Request not found' });
+      }
+      res.status(200).json(updatedRequest);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
