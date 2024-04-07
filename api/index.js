@@ -37,6 +37,11 @@ app.get('/requests/:id', requestController.getRequestById);
 app.put('/requests/:id', requestController.updateRequestById);
 app.delete('/requests/:id', requestController.deleteRequestById);
 
+app.get('/requests/pending', requestController.getPendingRequests);
+app.get('/requests/accepted', requestController.getAcceptedRequests);
+app.get('/requests/rejected', requestController.getRejectedRequests);
+app.put('/requests/:id/accept', requestController.acceptRequest);
+
 
 app.listen(5000, () => console.log("Server ready on port 5000."));
 

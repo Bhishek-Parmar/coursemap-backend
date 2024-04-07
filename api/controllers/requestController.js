@@ -1,4 +1,4 @@
-const Request = require('../models/Request');
+const Request = require('../models/requestModel');
 
 exports.createRequest = async (req, res) => {
   try {
@@ -66,3 +66,52 @@ exports.deleteRequestById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+exports.getPendingRequests = async (req, res) => {
+    try {
+      const pendingRequests = await Request.find({ status: 'pending' });
+      res.status(200).json(pendingRequests);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  
+  exports.getAcceptedRequests = async (req, res) => {
+    try {
+      const acceptedRequests = await Request.find({ status: 'accepted' });
+      res.status(200).json(acceptedRequests);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  
+  exports.getRejectedRequests = async (req, res) => {
+    try {
+      const rejectedRequests = await Request.find({ status: 'rejected' });
+      res.status(200).json(rejectedRequests);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  
+  exports.acceptRequest = async (req, res) => {
+    try {
+      const requestId = req.params.id;
+      const updatedRequest = await Request.findByIdAndUpdate(
+        requestId,
+        { status: 'accepted' },
+        { new: true }
+      );
+      if (!updatedRequest) {
+        return res.status(404).json({ message: 'Request not found' });
+      }
+      res.status(200).json(updatedRequest);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
