@@ -15,7 +15,8 @@ exports.createNode = async (req, res) => {
     req.body.title = req.body.title.toLowerCase();
 
     const newNode = await Node.create(req.body);
-    res.status(201).json(newNode);
+    // res.status(201).json(newNode);
+    res.status(201).send({status : "success", message: "Created Successfully!", data: newNode});
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -202,10 +203,11 @@ exports.getNodeWithPrerequisites = async (req, res) => {
 
 exports.addResourses = async (req, res) => {
   console.log("add resourse requist called");
-  const { resourseName, resourseUrl } = req.body;
+  const { resourseName, resourseDescription ,resourseUrl } = req.body;
   if (!resourseName || !resourseUrl)
     return res.send({ status: "failed", message: "all fields are required" });
   const nodeId = req.params.nodeId;
+  console.log("node to ad resourse : ", nodeId);
   if (!nodeId)
     return res.send({
       status: "failed",
@@ -219,8 +221,10 @@ exports.addResourses = async (req, res) => {
         status: "failed",
         message: "node not found to add resourse",
       });
-    const updatedNode = await Node.findByIdAndUpdate(nodeId, {
-      $push: { resources: { resourseName, resourseUrl } },
+      const newResourse = { resourseName : resourseName , resourseUrl : resourseUrl, resourseDescription : resourseDescription};
+      console.log("ading resourse ", newResourse);
+      const updatedNode = await Node.findByIdAndUpdate(nodeId, {
+      $push: { resources: newResourse },
     });
     res.send({
       status: "success",
@@ -228,10 +232,41 @@ exports.addResourses = async (req, res) => {
       updatedNode: updatedNode,
     });
   } catch (err) {
-    console.log("error in finding node to add resourse");
+    console.log("adding resourse err ", err);
     return res.send({
       status: "failed",
-      message: "added resourse successfully [OK]",
+      message: "resouse not added",
     });
   }
+
+  
+  
 };
+exports.getResourseByID = async (req, res)=>{
+  const{nodeId} = req.params;
+  try{
+    if(!nodeId) throw new Error("Invalid node!");
+    const node = await Node.findById(nodeId);
+    if(!node) throw new Error("Node not found!");
+    console.log("node with resourses ", node);
+    res.send({status : "success", message : "Resourse fetched successfully", data : node.resources});
+
+  }catch(err){
+    console.log("resourse fetching err : ",err);
+    res.send({status : "failed", message : `${err.message}`})
+  }
+}
+exports.deleteResourseByID = async (req, res)=>{
+  const{nodeId} = req.params;
+  try{
+    if(!nodeId) throw new Error("Invalid node!");
+    const node = await Node.findById(nodeId);
+    if(!node) throw new Error("Node not found!");
+    console.log("node with resourses ", node);
+    res.send({status : "success", message : "Resourse fetched successfully", data : node.resources});
+
+  }catch(err){
+    console.log("resourse fetching err : ",err);
+    res.send({status : "failed", message : `${err.message}`})
+  }
+}
