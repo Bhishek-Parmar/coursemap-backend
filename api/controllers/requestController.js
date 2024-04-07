@@ -101,36 +101,84 @@ exports.getPendingRequests = async (req, res) => {
   };
   
   
-  exports.acceptRequest = async (req, res) => {
-    try {
-      const requestId = req.params.id;
-      const updatedRequest = await Request.findByIdAndUpdate(
-        requestId,
-        { status: 'accepted' },
-        { new: true }
-      );
-      if (!updatedRequest) {
-        return res.status(404).json({ message: 'Request not found' });
-      }
-      res.status(200).json(updatedRequest);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+  // exports.acceptRequest = async (req, res) => {
+  //   try {
+  //     const requestId = req.params.id;
+  //     const updatedRequest = await Request.findByIdAndUpdate(
+  //       requestId,
+  //       { status: 'accepted' },
+  //       { new: true }
+  //     );
+  //     if (!updatedRequest) {
+  //       return res.status(404).json({ message: 'Request not found' });
+  //     }
+  //     res.status(200).json(updatedRequest);
+  //   } catch (error) {
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // };
 
-  exports.rejectRequest = async (req, res) => {
-    try {
-      const requestId = req.params.id;
-      const updatedRequest = await Request.findByIdAndUpdate(
-        requestId,
-        { status: 'rejected' },
-        { new: true }
-      );
-      if (!updatedRequest) {
-        return res.status(404).json({ message: 'Request not found' });
-      }
-      res.status(200).json(updatedRequest);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  // exports.rejectRequest = async (req, res) => {
+  //   try {
+  //     const requestId = req.params.id;
+  //     const updatedRequest = await Request.findByIdAndUpdate(
+  //       requestId,
+  //       { status: 'rejected' },
+  //       { new: true }
+  //     );
+  //     if (!updatedRequest) {
+  //       return res.status(404).json({ message: 'Request not found' });
+  //     }
+  //     res.status(200).json(updatedRequest);
+  //   } catch (error) {
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // };
+
+  const mongoose = require('mongoose');
+
+exports.acceptRequest = async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    
+    // Check if the requestId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: 'Invalid request ID' });
     }
-  };
+    
+    const updatedRequest = await Request.findByIdAndUpdate(
+      requestId,
+      { status: 'accepted' },
+      { new: true }
+    );
+    if (!updatedRequest) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json(updatedRequest);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.rejectRequest = async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    
+    // Check if the requestId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: 'Invalid request ID' });
+    }
+    
+    const updatedRequest = await Request.findByIdAndUpdate(
+      requestId,
+      { status: 'rejected' },
+      { new: true }
+    );
+    if (!updatedRequest) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json(updatedRequest);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
