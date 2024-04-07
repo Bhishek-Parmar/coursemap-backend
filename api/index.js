@@ -30,7 +30,7 @@ app.get(
 );
 app.post("/nodes/addResourses/:nodeId", nodeController.addResourses);
 
-//request routes
+//request routessss
 app.post('/requests', requestController.createRequest);
 app.get('/requests', requestController.getAllRequests);
 app.get('/requests/:id', requestController.getRequestById);
