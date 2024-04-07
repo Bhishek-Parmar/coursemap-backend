@@ -71,10 +71,12 @@ exports.deleteRequestById = async (req, res) => {
 
 exports.getPendingRequests = async (req, res) => {
     try {
+      console.log("here")
       const pendingRequests = await Request.find({ status: 'pending' });
       res.status(200).json(pendingRequests);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.log(error);
+      res.status(500).json({ message: error.message,"msg": "apna" });
     }
   };
   
